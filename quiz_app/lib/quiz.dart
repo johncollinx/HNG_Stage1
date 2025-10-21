@@ -20,17 +20,17 @@ class _QuizState extends State<Quiz> {
   List<AnswerTracking> _answersHistory = [];
   String? _currentSelectedAnswer;
   
-  // 💡 Mutable list of questions managed by the state
+  // Mutable list of questions managed by the state
   List<Question> _currentQuestions = List.from(techQuestions);
 
-  // --- METHODS ---
+  // --- METHODS (unchanged) ---
 
   void _switchScreen(String screenName) {
     setState(() {
       _activeScreen = screenName;
       if (screenName == 'quiz-screen') {
         _currentQuestionIndex = 0;
-        _answersHistory = []; // Reset on new game
+        _answersHistory = [];
         _currentSelectedAnswer = null;
       }
     });
@@ -53,16 +53,13 @@ class _QuizState extends State<Quiz> {
   }
 
   void _goToNextQuestion() {
-    // 1. Save the answer before moving
     _saveAnswer();
 
-    // 2. Increment index and reset selection
     setState(() {
       _currentQuestionIndex++;
       _currentSelectedAnswer = null;
     });
 
-    // 3. Check if quiz is over
     if (_currentQuestionIndex >= _currentQuestions.length) {
       _switchScreen('results-screen');
     }
@@ -74,7 +71,6 @@ class _QuizState extends State<Quiz> {
     setState(() {
       if (_currentQuestionIndex > 0) {
         _currentQuestionIndex--;
-        // Reload previous answer, if it exists
         _currentSelectedAnswer = _answersHistory[_currentQuestionIndex].selectedAnswer; 
       }
     });
@@ -83,14 +79,12 @@ class _QuizState extends State<Quiz> {
   void _saveAnswer() {
     final currentQuestion = _currentQuestions[_currentQuestionIndex];
     
-    // Create the tracking object
     final tracking = AnswerTracking(
       question: currentQuestion.questionText,
-      selectedAnswer: _currentSelectedAnswer ?? 'Skipped', // Default to 'Skipped'
+      selectedAnswer: _currentSelectedAnswer ?? 'Skipped',
       correctAnswer: currentQuestion.correctAnswer,
     );
 
-    // Update existing or add new
     if (_currentQuestionIndex < _answersHistory.length) {
       _answersHistory[_currentQuestionIndex] = tracking;
     } else {
@@ -98,17 +92,19 @@ class _QuizState extends State<Quiz> {
     }
   }
 
-  // --- WIDGET BUILDER ---
+  // --- WIDGET BUILDER (FIXED) ---
   @override
   Widget build(BuildContext context) {
     Widget screenWidget;
     
     if (_activeScreen == 'start-screen') {
+      // 💡 FIX: Removed const here because of the non-constant function callbacks
       screenWidget = StartScreen(
         onStartQuiz: () => _switchScreen('quiz-screen'),
         onAddQuestions: _addQuestions, 
       );
     } else if (_activeScreen == 'quiz-screen') {
+      // 💡 FIX: Removed const here because the entire widget is dynamically changing
       screenWidget = QuizScreen(
         question: _currentQuestions[_currentQuestionIndex],
         questionIndex: _currentQuestionIndex,
@@ -119,6 +115,7 @@ class _QuizState extends State<Quiz> {
         onPrevious: _goToPreviousQuestion,
       );
     } else { // 'results-screen'
+      // 💡 FIX: Removed const here because the answersHistory is mutable state data
       screenWidget = ResultsScreen(
         answersHistory: _answersHistory,
         onRestart: () => _switchScreen('start-screen'),
@@ -139,65 +136,6 @@ class _QuizState extends State<Quiz> {
         ),
       ),
       child: screenWidget,
-    );
-  }
-}                'assets/images/quiz-logo.png', 
-                width: 300,
-              ),
-            ),
-            const SizedBox(height: 50),
-            Text(
-              'Learn Flutter the fun way!',
-              style: GoogleFonts.lato(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-            
-            // Main Start Button
-            OutlinedButton.icon(
-              onPressed: onStartQuiz,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-              ),
-              icon: const Icon(Icons.arrow_right_alt),
-              label: const Text('Start Quiz'),
-            ),
-
-            // Optional: Button to test the new question adding feature
-            if (onAddQuestions != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: TextButton.icon(
-                  onPressed: () {
-                    // Example of new questions to add
-                    final newQuestions = [
-                      Question(
-                        questionText: 'Is Dart better than Java?',
-                        options: ['Yes', 'No', 'Maybe', 'Depends on the project'],
-                        correctAnswer: 'Depends on the project',
-                      ),
-                    ];
-                    onAddQuestions!(newQuestions);
-                  },
-                  icon: const Icon(Icons.add_box, color: Colors.white54),
-                  label: const Text(
-                    'Add 1 Question (Test)',
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
-                  ),
-                ),
-              ),
-          ],
-        ),
-
-        // 3. Spacer to push the main content up
-        const Spacer(),
-
-        // 4. Footer at the very bottom
-        const Footer(), // 💡 FOOTER ADDED HERE
-      ],
     );
   }
 }
