@@ -11,20 +11,9 @@ workflows:
           flutter clean
           flutter pub get
 
-      # Safe launcher icon generation (Android only)
       - name: Generate launcher icons
         script: |
-          # Check if flutter_launcher_icons.yaml exists
-          if [ -f "flutter_launcher_icons.yaml" ]; then
-            # Disable iOS generation if folder missing
-            if [ ! -d "ios" ]; then
-              echo "No iOS folder found — running Android-only launcher icon generation"
-              sed -i 's/ios: true/ios: false/' flutter_launcher_icons.yaml 2>/dev/null || true
-            fi
-            flutter pub run flutter_launcher_icons
-          else
-            echo "No flutter_launcher_icons.yaml found — skipping"
-          fi
+          flutter pub run flutter_launcher_icons
 
       - name: Build release APK
         script: |
