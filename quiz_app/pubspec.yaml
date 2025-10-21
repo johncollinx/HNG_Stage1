@@ -21,7 +21,7 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: true            # ✅ Use `true` instead of a string
-  ios: true
+  ios: false
   image_path: "../assets/icon.png"
 
 flutter:
