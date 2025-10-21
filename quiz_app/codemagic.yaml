@@ -1,7 +1,7 @@
 workflows:
   build-android:
     name: Build Android APK
-    working_directory: portfolio_app
+    working_directory: quiz_app
     environment:
       flutter: stable
     scripts:
@@ -19,4 +19,4 @@ workflows:
           flutter build apk --release
 
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/quiz_app.apk
