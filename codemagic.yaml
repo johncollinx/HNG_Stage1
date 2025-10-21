@@ -1,7 +1,7 @@
 workflows:
   build-android:
     name: Build Android APK
-    working_directory:quiz_app
+    working_directory: quiz_app
     environment:
       flutter: stable
     scripts:
