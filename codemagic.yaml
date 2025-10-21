@@ -4,19 +4,31 @@ workflows:
     working_directory: quiz_app
     environment:
       flutter: stable
+
     scripts:
       - name: Clean and get dependencies
         script: |
           flutter clean
           flutter pub get
 
+      # Safe launcher icon generation (Android only)
       - name: Generate launcher icons
         script: |
-          flutter pub run flutter_launcher_icons
+          # Check if flutter_launcher_icons.yaml exists
+          if [ -f "flutter_launcher_icons.yaml" ]; then
+            # Disable iOS generation if folder missing
+            if [ ! -d "ios" ]; then
+              echo "No iOS folder found — running Android-only launcher icon generation"
+              sed -i 's/ios: true/ios: false/' flutter_launcher_icons.yaml 2>/dev/null || true
+            fi
+            flutter pub run flutter_launcher_icons
+          else
+            echo "No flutter_launcher_icons.yaml found — skipping"
+          fi
 
       - name: Build release APK
         script: |
           flutter build apk --release
 
     artifacts:
-      - build/app/outputs/flutter-apk/Tequest.apk
+      - build/app/outputs/flutter-apk/app-release.apk
