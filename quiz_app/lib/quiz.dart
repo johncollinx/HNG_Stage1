@@ -43,8 +43,6 @@ class _QuizState extends State<Quiz> {
       }
     });
   }
-  
-  // 💡 REMOVED: _addQuestions method is removed.
 
   void _selectAnswer(String answer) {
     setState(() {
@@ -56,7 +54,7 @@ class _QuizState extends State<Quiz> {
     // Stop the current timer
     _stopTimer();
     
-    // Save the answer (will save 'Skipped' if timedOut or not selected)
+    // Save the current state/answer
     _saveAnswer(timedOut: timedOut);
 
     // Increment index and reset selection
@@ -141,139 +139,36 @@ class _QuizState extends State<Quiz> {
     super.dispose();
   }
 
-  // --- WIDGET BUILDER ---
-  @override
-  Widget build(BuildContext context) {
-    Widget screenWidget;
-    
-    if (_activeScreen == 'start-screen') {
-      screenWidget = StartScreen(
-        onStartQuiz: () => _switchScreen('quiz-screen'),
-        // 💡 REMOVED: onAddQuestions is no longer passed
-      );
-    } else if (_activeScreen == 'quiz-screen') {
-      screenWidget = QuizScreen(
-        question: _currentQuestions[_currentQuestionIndex],
-        questionIndex: _currentQuestionIndex,
-        totalQuestions: _currentQuestions.length,
-        selectedAnswer: _currentSelectedAnswer,
-        secondsRemaining: _secondsRemaining, // 💡 NEW: Pass seconds remaining
-        onSelectAnswer: _selectAnswer,
-        onNext: _goToNextQuestion,
-        onPrevious: _goToPreviousQuestion,
-      );
-    } else { // 'results-screen'
-      screenWidget = ResultsScreen(
-        answersHistory: _answersHistory,
-        onRestart: () => _switchScreen('start-screen'),
-        totalQuestions: _currentQuestions.length,
-      );
-    }
-
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 78, 13, 151),
-            Color.fromARGB(255, 107, 15, 168),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: screenWidget,
-    );
-  }
-}  }
-  
-  // Method to add new questions dynamically
-  void _addQuestions(List<Question> newQuestions) {
-    setState(() {
-      _currentQuestions.addAll(newQuestions);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${newQuestions.length} question(s) added!')),
-      );
-    });
-  }
-
-  void _selectAnswer(String answer) {
-    setState(() {
-      _currentSelectedAnswer = answer;
-    });
-  }
-
-  void _goToNextQuestion() {
-    _saveAnswer();
-
-    setState(() {
-      _currentQuestionIndex++;
-      _currentSelectedAnswer = null;
-    });
-
-    if (_currentQuestionIndex >= _currentQuestions.length) {
-      _switchScreen('results-screen');
-    }
-  }
-  
-  void _goToPreviousQuestion() {
-    _saveAnswer();
-
-    setState(() {
-      if (_currentQuestionIndex > 0) {
-        _currentQuestionIndex--;
-        _currentSelectedAnswer = _answersHistory[_currentQuestionIndex].selectedAnswer; 
-      }
-    });
-  }
-
-  void _saveAnswer() {
-    final currentQuestion = _currentQuestions[_currentQuestionIndex];
-    
-    final tracking = AnswerTracking(
-      question: currentQuestion.questionText,
-      selectedAnswer: _currentSelectedAnswer ?? 'Skipped',
-      correctAnswer: currentQuestion.correctAnswer,
-    );
-
-    if (_currentQuestionIndex < _answersHistory.length) {
-      _answersHistory[_currentQuestionIndex] = tracking;
-    } else {
-      _answersHistory.add(tracking);
-    }
-  }
-
   // --- WIDGET BUILDER (FIXED) ---
   @override
   Widget build(BuildContext context) {
     Widget screenWidget;
     
     if (_activeScreen == 'start-screen') {
-      // 💡 FIX: Removed const here because of the non-constant function callbacks
       screenWidget = StartScreen(
         onStartQuiz: () => _switchScreen('quiz-screen'),
-        onAddQuestions: _addQuestions, 
       );
     } else if (_activeScreen == 'quiz-screen') {
-      // 💡 FIX: Removed const here because the entire widget is dynamically changing
+      // 💡 FIX: All properties are now correctly accessible and passed
       screenWidget = QuizScreen(
         question: _currentQuestions[_currentQuestionIndex],
         questionIndex: _currentQuestionIndex,
         totalQuestions: _currentQuestions.length,
         selectedAnswer: _currentSelectedAnswer,
+        secondsRemaining: _secondsRemaining, // 💡 REQUIRED PARAMETER ADDED
         onSelectAnswer: _selectAnswer,
         onNext: _goToNextQuestion,
         onPrevious: _goToPreviousQuestion,
       );
     } else { // 'results-screen'
-      // 💡 FIX: Removed const here because the answersHistory is mutable state data
+      // 💡 FIX: All properties and methods are now correctly accessible
       screenWidget = ResultsScreen(
         answersHistory: _answersHistory,
-        onRestart: () => _switchScreen('start-screen'),
+        onRestart: () => _switchScreen('start-screen'), // 💡 FIX: Method now accessible
         totalQuestions: _currentQuestions.length,
       );
     }
 
-    // Apply the gradient background to the entire body
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
