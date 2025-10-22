@@ -32,7 +32,7 @@ class StartScreen extends StatelessWidget {
             ),
             const SizedBox(height: 50),
             Text(
-              'Learn Flutter the fun way!',
+              'Learn With Tequest!',
               style: GoogleFonts.lato(
                 color: Colors.white,
                 fontSize: 24,
