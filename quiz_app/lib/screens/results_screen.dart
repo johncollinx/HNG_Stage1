@@ -35,6 +35,7 @@ class ResultsScreen extends StatelessWidget {
     return summary;
   }
 
+
   @override
   Widget build(BuildContext context) {
     final summaryData = getSummaryData();
@@ -47,23 +48,16 @@ class ResultsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'You answered $numCorrectAnswers out of $totalQuestions questions correctly!',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.lato(
-                color: const Color.fromARGB(255, 230, 200, 253),
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
+            // ... (Text and SizedBox unchanged) ...
             
             // Question Summary Widget
-            // 🚀 FIX: Must use 'const' before the widget call.
-            const QuestionSummary(summaryData), 
+            // 🚀 FIX: Remove 'const' because summaryData is a runtime value.
+            QuestionSummary(summaryData), 
 
             const SizedBox(height: 30),
 
+            // Restart Button
+            // ... (rest of the code unchanged) ...
             // Restart Button
             TextButton.icon(
               onPressed: onRestart,
