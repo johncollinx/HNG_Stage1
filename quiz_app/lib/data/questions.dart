@@ -3,6 +3,7 @@
 import '../models/question.dart';
 
 const techQuestions = [
+  
   Question(
     questionText: 'What is the primary function of the Flutter framework?',
     options: [
@@ -53,4 +54,56 @@ const techQuestions = [
     ],
     correctAnswer: 'To rebuild the widget tree with new data.',
   ),
+  
+
+  Question(
+    questionText: 'Which widget allows for scrolling through a single column of content?',
+    options: [
+      'Row',
+      'Column',
+      'Container',
+      'SingleChildScrollView',
+    ],
+    correctAnswer: 'SingleChildScrollView',
+  ),
+  Question(
+    questionText: 'The concept of "hot reload" in Flutter is primarily used for:',
+    options: [
+      'Database connection',
+      'Building release APKs',
+      'Faster development iteration',
+      'Code optimization',
+    ],
+    correctAnswer: 'Faster development iteration',
+  ),
+  Question(
+    questionText: 'What is the root of the widget tree in a typical Flutter application?',
+    options: [
+      'Scaffold',
+      'main() function',
+      'runApp()',
+      'MaterialApp or CupertinoApp',
+    ],
+    correctAnswer: 'MaterialApp or CupertinoApp',
+  ),
+  Question(
+    questionText: 'Which property is used to align widgets horizontally in a Row?',
+    options: [
+      'MainAxisAlignment',
+      'CrossAxisAlignment',
+      'TextDirection',
+      'VerticalDirection',
+    ],
+    correctAnswer: 'MainAxisAlignment',
+  ),
+  Question(
+    questionText: 'What does the abbreviation "API" stand for in programming?',
+    options: [
+      'Application Program Interface',
+      'Advanced Process Instruction',
+      'Automated Protocol Index',
+      'Application Performance Indicator',
+    ],
+    correctAnswer: 'Application Program Interface',
+  ) 
 ];
