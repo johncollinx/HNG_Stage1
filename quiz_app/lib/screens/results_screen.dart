@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/answer_tracking.dart';
-import '../widgets/summary_item.dart';
+import '../widgets/question_summary.dart';
 
 class ResultsScreen extends StatelessWidget {
   const ResultsScreen({
