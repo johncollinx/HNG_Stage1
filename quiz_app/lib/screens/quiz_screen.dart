@@ -12,6 +12,7 @@ class QuizScreen extends StatelessWidget {
     required this.questionIndex,
     required this.totalQuestions,
     this.selectedAnswer,
+    required this.secondsRemaining, // 💡 NEW: Timer state
     required this.onSelectAnswer,
     required this.onNext,
     required this.onPrevious,
@@ -21,8 +22,9 @@ class QuizScreen extends StatelessWidget {
   final int questionIndex;
   final int totalQuestions;
   final String? selectedAnswer;
+  final int secondsRemaining; // 💡 NEW
   final void Function(String answer) onSelectAnswer;
-  final void Function() onNext;
+  final void Function({bool timedOut}) onNext; // Updated signature
   final void Function() onPrevious;
 
   @override
@@ -35,6 +37,95 @@ class QuizScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Timer Indicator (NEW)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Question ${questionIndex + 1} of $totalQuestions',
+                  style: GoogleFonts.lato(
+                    color: const Color.fromARGB(255, 201, 153, 251),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Time: $secondsRemaining s', // 💡 Display Timer
+                  style: GoogleFonts.lato(
+                    color: secondsRemaining <= 5 
+                        ? Colors.redAccent 
+                        : Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(color: Colors.white24, height: 25),
+
+            // Question Text
+            Text(
+              question.questionText,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lato(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Answer Buttons
+            ...question.getShuffledOptions().map((answer) {
+              return AnswerButton(
+                answerText: answer,
+                isSelected: selectedAnswer == answer,
+                onTap: () {
+                  onSelectAnswer(answer);
+                },
+              );
+            }),
+            
+            const SizedBox(height: 40),
+
+            // Navigation Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Previous Button
+                ElevatedButton.icon(
+                  onPressed: questionIndex > 0 ? onPrevious : null,
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Previous'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 107, 15, 168),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+
+                // Next Button (Only active if an answer is selected)
+                ElevatedButton.icon(
+                  // 💡 CHANGE: Next button only works if selectedAnswer is not null
+                  onPressed: selectedAnswer != null ? () => onNext(timedOut: false) : null,
+                  icon: const Icon(Icons.arrow_forward),
+                  label: Text(
+                    questionIndex + 1 == totalQuestions ? 'FINISH' : 'Next',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: selectedAnswer != null 
+                        ? const Color.fromARGB(255, 137, 24, 255)
+                        : const Color.fromARGB(255, 90, 90, 90),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}          children: [
             // Question Counter
             Text(
               'Question ${questionIndex + 1} of $totalQuestions',
