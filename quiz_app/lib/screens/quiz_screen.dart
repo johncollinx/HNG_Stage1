@@ -12,7 +12,7 @@ class QuizScreen extends StatelessWidget {
     required this.questionIndex,
     required this.totalQuestions,
     this.selectedAnswer,
-    required this.secondsRemaining, // 💡 NEW: Timer state
+    required this.secondsRemaining,
     required this.onSelectAnswer,
     required this.onNext,
     required this.onPrevious,
@@ -22,9 +22,9 @@ class QuizScreen extends StatelessWidget {
   final int questionIndex;
   final int totalQuestions;
   final String? selectedAnswer;
-  final int secondsRemaining; // 💡 NEW
+  final int secondsRemaining;
   final void Function(String answer) onSelectAnswer;
-  final void Function({bool timedOut}) onNext; // Updated signature
+  final void Function({bool timedOut}) onNext; 
   final void Function() onPrevious;
 
   @override
@@ -37,7 +37,7 @@ class QuizScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Timer Indicator (NEW)
+            // Timer and Question Counter Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -50,7 +50,7 @@ class QuizScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Time: $secondsRemaining s', // 💡 Display Timer
+                  'Time: $secondsRemaining s',
                   style: GoogleFonts.lato(
                     color: secondsRemaining <= 5 
                         ? Colors.redAccent 
@@ -89,6 +89,7 @@ class QuizScreen extends StatelessWidget {
             const SizedBox(height: 40),
 
             // Navigation Buttons
+            // This Row must NOT be const
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -105,13 +106,14 @@ class QuizScreen extends StatelessWidget {
 
                 // Next Button (Only active if an answer is selected)
                 ElevatedButton.icon(
-                  // 💡 CHANGE: Next button only works if selectedAnswer is not null
                   onPressed: selectedAnswer != null ? () => onNext(timedOut: false) : null,
                   icon: const Icon(Icons.arrow_forward),
                   label: Text(
+                    // These variables are now correctly accessible
                     questionIndex + 1 == totalQuestions ? 'FINISH' : 'Next',
                   ),
                   style: ElevatedButton.styleFrom(
+                    // This variable is now correctly accessible
                     backgroundColor: selectedAnswer != null 
                         ? const Color.fromARGB(255, 137, 24, 255)
                         : const Color.fromARGB(255, 90, 90, 90),
@@ -125,79 +127,5 @@ class QuizScreen extends StatelessWidget {
       ),
     );
   }
-}          children: [
-            // Question Counter
-            Text(
-              'Question ${questionIndex + 1} of $totalQuestions',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.lato(
-                color: const Color.fromARGB(255, 201, 153, 251),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Question Text
-            Text(
-              question.questionText,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.lato(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-
-            // Answer Buttons (mapped from shuffled options)
-            ...question.getShuffledOptions().map((answer) {
-              return AnswerButton(
-                answerText: answer,
-                isSelected: selectedAnswer == answer,
-                onTap: () {
-                  onSelectAnswer(answer);
-                },
-              );
-            }),
-            
-            const SizedBox(height: 40),
-
-            // Navigation Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Previous Button
-                ElevatedButton.icon(
-                  onPressed: questionIndex > 0 ? onPrevious : null,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Previous'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 107, 15, 168),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-
-                // Next Button
-                ElevatedButton.icon(
-                  // Next button is disabled until an answer is selected
-                  onPressed: selectedAnswer != null ? onNext : null, 
-                  icon: const Icon(Icons.arrow_forward),
-                  label: Text(
-                    questionIndex + 1 == totalQuestions ? 'FINISH' : 'Next',
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: selectedAnswer != null 
-                        ? const Color.fromARGB(255, 137, 24, 255) // Active color
-                        : const Color.fromARGB(255, 90, 90, 90), // Disabled color
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
+// 💡 NOTE: Everything after this line was the duplicate code block and has been removed.
