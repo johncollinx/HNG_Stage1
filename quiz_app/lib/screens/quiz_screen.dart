@@ -13,6 +13,7 @@ class QuizScreen extends StatelessWidget {
     required this.totalQuestions,
     this.selectedAnswer,
     required this.secondsRemaining,
+    required this.optionsToDisplay, // Accepts pre-shuffled list
     required this.onSelectAnswer,
     required this.onNext,
     required this.onPrevious,
@@ -23,8 +24,9 @@ class QuizScreen extends StatelessWidget {
   final int totalQuestions;
   final String? selectedAnswer;
   final int secondsRemaining;
+  final List<String> optionsToDisplay; // New field for static options
   final void Function(String answer) onSelectAnswer;
-  final void Function({bool timedOut}) onNext; 
+  final void Function({bool timedOut}) onNext;
   final void Function() onPrevious;
 
   @override
@@ -76,12 +78,18 @@ class QuizScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             // Answer Buttons
-            ...question.getShuffledOptions().map((answer) {
+            // FIX: Use the stable list from the state, NOT a shuffled getter
+            ...optionsToDisplay.map((answer) { 
               return AnswerButton(
                 answerText: answer,
                 isSelected: selectedAnswer == answer,
                 onTap: () {
-                  onSelectAnswer(answer);
+                  // Only allow selection if the timer is still running (secondsRemaining > 0)
+                  // The actual enforcement is mostly handled by the continuous timer, 
+                  // but this is a good practice.
+                  if (secondsRemaining > 0) {
+                     onSelectAnswer(answer);
+                  }
                 },
               );
             }),
@@ -89,7 +97,6 @@ class QuizScreen extends StatelessWidget {
             const SizedBox(height: 40),
 
             // Navigation Buttons
-            // This Row must NOT be const
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -109,11 +116,9 @@ class QuizScreen extends StatelessWidget {
                   onPressed: selectedAnswer != null ? () => onNext(timedOut: false) : null,
                   icon: const Icon(Icons.arrow_forward),
                   label: Text(
-                    // These variables are now correctly accessible
                     questionIndex + 1 == totalQuestions ? 'FINISH' : 'Next',
                   ),
                   style: ElevatedButton.styleFrom(
-                    // This variable is now correctly accessible
                     backgroundColor: selectedAnswer != null 
                         ? const Color.fromARGB(255, 137, 24, 255)
                         : const Color.fromARGB(255, 90, 90, 90),
@@ -128,4 +133,3 @@ class QuizScreen extends StatelessWidget {
     );
   }
 }
-// 💡 NOTE: Everything after this line was the duplicate code block and has been removed.
