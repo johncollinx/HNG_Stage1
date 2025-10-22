@@ -17,12 +17,12 @@ class Footer extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Text(
-            'Made with Flutter 💙',
+            'Made with Flutter ♥️',
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
           SizedBox(height: 10),
           Text(
-            'Disclaimer: This portfolio is for personal and illustrative purposes only. '
+            'Disclaimer: The app is personal and for illustrative purposes only. '
             'Information presented does not represent any official affiliation or endorsement.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: Colors.grey),
