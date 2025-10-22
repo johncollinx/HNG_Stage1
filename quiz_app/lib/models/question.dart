@@ -10,11 +10,6 @@ class Question {
   final String questionText;
   final List<String> options;
   final String correctAnswer;
-
-  // Utility method to shuffle the options for randomization
-  List<String> getShuffledOptions() {
-    final shuffledList = List.of(options);
-    shuffledList.shuffle();
-    return shuffledList;
-  }
+  
+  // The getShuffledOptions() method is now removed.
 }
