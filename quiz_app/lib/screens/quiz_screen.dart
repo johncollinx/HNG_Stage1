@@ -13,7 +13,7 @@ class QuizScreen extends StatelessWidget {
     required this.totalQuestions,
     this.selectedAnswer,
     required this.secondsRemaining,
-    required this.optionsToDisplay, // Accepts pre-shuffled list
+    required this.optionsToDisplay,
     required this.onSelectAnswer,
     required this.onNext,
     required this.onPrevious,
@@ -24,7 +24,7 @@ class QuizScreen extends StatelessWidget {
   final int totalQuestions;
   final String? selectedAnswer;
   final int secondsRemaining;
-  final List<String> optionsToDisplay; // New field for static options
+  final List<String> optionsToDisplay;
   final void Function(String answer) onSelectAnswer;
   final void Function({bool timedOut}) onNext;
   final void Function() onPrevious;
@@ -78,15 +78,12 @@ class QuizScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             // Answer Buttons
-            // FIX: Use the stable list from the state, NOT a shuffled getter
             ...optionsToDisplay.map((answer) { 
               return AnswerButton(
                 answerText: answer,
                 isSelected: selectedAnswer == answer,
                 onTap: () {
-                  // Only allow selection if the timer is still running (secondsRemaining > 0)
-                  // The actual enforcement is mostly handled by the continuous timer, 
-                  // but this is a good practice.
+                  // Safety check: only allow interaction if time remains.
                   if (secondsRemaining > 0) {
                      onSelectAnswer(answer);
                   }
