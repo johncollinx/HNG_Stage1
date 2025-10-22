@@ -18,6 +18,9 @@ class ResultsScreen extends StatelessWidget {
   final void Function() onRestart;
   final int totalQuestions;
 
+  // Assume 10 points per correct answer
+  static const int pointsPerQuestion = 10;
+
   // Helper method to create summary data
   List<Map<String, Object>> getSummaryData() {
     final List<Map<String, Object>> summary = [];
@@ -35,11 +38,13 @@ class ResultsScreen extends StatelessWidget {
     return summary;
   }
 
-
   @override
   Widget build(BuildContext context) {
     final summaryData = getSummaryData();
     final numCorrectAnswers = answersHistory.where((item) => item.isCorrect).length;
+    
+    // 🚀 NEW: Calculate the total score
+    final totalScore = numCorrectAnswers * pointsPerQuestion;
 
     return SizedBox(
       width: double.infinity,
@@ -48,16 +53,35 @@ class ResultsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ... (Text and SizedBox unchanged) ...
+            // Display Correct Answers Count
+            Text(
+              'You answered $numCorrectAnswers out of $totalQuestions questions correctly!',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lato(
+                color: const Color.fromARGB(255, 230, 200, 253),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
             
+            // 🚀 NEW: Display Total Points Scored
+            Text(
+              'Total Score: $totalScore Points',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lato(
+                color: const Color.fromARGB(255, 150, 240, 255), // Light blue color for score
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 30),
+
             // Question Summary Widget
-            // 🚀 FIX: Remove 'const' because summaryData is a runtime value.
             QuestionSummary(summaryData), 
 
             const SizedBox(height: 30),
 
-            // Restart Button
-            // ... (rest of the code unchanged) ...
             // Restart Button
             TextButton.icon(
               onPressed: onRestart,
@@ -65,7 +89,7 @@ class ResultsScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.refresh),
-              label: const Text('Restart Quiz!'), // Corrected truncated text
+              label: const Text('Restart Quiz!'),
             ),
           ],
         ),
