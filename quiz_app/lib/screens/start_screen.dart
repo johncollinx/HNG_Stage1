@@ -2,23 +2,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/question.dart';
 import '../widgets/footer.dart';
 
-// Define a type for the optional function
-typedef AddQuestionsCallback = void Function(List<Question> newQuestions); 
+// 💡 REMOVED: typedef AddQuestionsCallback is no longer needed
 
 class StartScreen extends StatelessWidget {
   const StartScreen({
     super.key,
     required this.onStartQuiz,
-    this.onAddQuestions, 
+    // 💡 REMOVED: this.onAddQuestions
   });
 
-  // These properties are accessible via 'widget.' in StatefulWidgets 
-  // but directly via 'this.' or their name in StatelessWidgets.
   final void Function() onStartQuiz;
-  final AddQuestionsCallback? onAddQuestions;
+  // 💡 REMOVED: final AddQuestionsCallback? onAddQuestions;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +30,41 @@ class StartScreen extends StatelessWidget {
             Opacity(
               opacity: 0.6,
               child: Image.asset(
-                'assets/images/quiz-logo.png', 
+                'assets/icon.png', 
+                width: 300,
+              ),
+            ),
+            const SizedBox(height: 50),
+            Text(
+              'Learn Flutter the fun way!',
+              style: GoogleFonts.lato(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 30),
+            
+            // Main Start Button
+            OutlinedButton.icon(
+              onPressed: onStartQuiz,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.arrow_right_alt),
+              label: const Text('Start Quiz'), 
+            ),
+
+              ],
+        ),
+
+        const Spacer(),
+        
+        const Footer(),
+      ],
+    );
+  }
+}                'assets/images/quiz-logo.png', 
                 width: 300,
               ),
             ),
