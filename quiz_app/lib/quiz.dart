@@ -1,5 +1,7 @@
+// lib/quiz.dart
+
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'dart:async'; 
 
 import 'screens/start_screen.dart';
 import 'screens/quiz_screen.dart';
@@ -29,11 +31,10 @@ class _QuizState extends State<Quiz> {
   // --- TIMER VARIABLES ---
   Timer? _timer;
   int _secondsRemaining = 10;
-  final int _maxSeconds = 10;
+  final int _maxSeconds = 10; 
 
   // --- HELPER METHODS ---
 
-  // Shuffles options once and stores the result in _shuffledOptions
   void _shuffleAndSetOptions(int index) {
     if (index >= 0 && index < _currentQuestions.length) {
       final optionsToShuffle = List<String>.of(_currentQuestions[index].options);
@@ -45,26 +46,25 @@ class _QuizState extends State<Quiz> {
   }
 
   void _saveAnswer({bool timedOut = false}) {
-    // Only save if we are on a valid question index
     if (_currentQuestionIndex >= _currentQuestions.length) return; 
 
     final currentQuestion = _currentQuestions[_currentQuestionIndex];
     
-    // Determine the answer string
     String answer = 'Skipped';
     if (_currentSelectedAnswer != null) {
       answer = _currentSelectedAnswer!;
     } else if (timedOut) {
       answer = 'Timed Out';
     }
-
+    
+    // CRITICAL: Save the current timer state
     final tracking = AnswerTracking(
       question: currentQuestion.questionText,
       selectedAnswer: answer,
       correctAnswer: currentQuestion.correctAnswer,
+      secondsRemaining: _secondsRemaining, // SAVE CURRENT TIME
     );
 
-    // Update existing entry or add new one
     if (_currentQuestionIndex < _answersHistory.length) {
       _answersHistory[_currentQuestionIndex] = tracking;
     } else {
@@ -82,7 +82,8 @@ class _QuizState extends State<Quiz> {
         _answersHistory = []; 
         _currentSelectedAnswer = null;
         _shuffleAndSetOptions(_currentQuestionIndex);
-        _startTimer();
+        // Start from max time for the first question
+        _startTimer(time: _maxSeconds); 
       } else {
         _stopTimer();
       }
@@ -108,34 +109,46 @@ class _QuizState extends State<Quiz> {
       _switchScreen('results-screen');
     } else {
       _shuffleAndSetOptions(_currentQuestionIndex);
-      // Timer restarts fully for the new question
-      _startTimer();
+      // Start from max time for the new question
+      _startTimer(time: _maxSeconds); 
     }
   }
   
   void _goToPreviousQuestion() {
-    _saveAnswer(); // Save the current selection before leaving
+    _saveAnswer(); // Save current selection and remaining time
     _stopTimer();
 
     if (_currentQuestionIndex > 0) {
+      final previousIndex = _currentQuestionIndex - 1;
+      final previousAnswer = _answersHistory[previousIndex];
+
       setState(() {
-        _currentQuestionIndex--;
-        // Restore previous answer for stable selection
-        _currentSelectedAnswer = _answersHistory[_currentQuestionIndex].selectedAnswer; 
+        _currentQuestionIndex = previousIndex;
+        // Restore previous answer
+        _currentSelectedAnswer = previousAnswer.selectedAnswer; 
       });
 
-      // Restore static options for the previous question
       _shuffleAndSetOptions(_currentQuestionIndex);
       
-      // Timer restarts fully, giving the user 10s to re-evaluate
-      _startTimer();
+      // CRITICAL: Restart the timer from the RESTORED value
+      _startTimer(time: previousAnswer.secondsRemaining); 
     }
   }
 
   // --- TIMER MANAGEMENT ---
 
-  void _startTimer() {
-    _secondsRemaining = _maxSeconds;
+  // MODIFIED: Accepts the starting time for stable state
+  void _startTimer({required int time}) {
+    // If time has expired, just set the remaining time to 0 and don't start the timer
+    if (time <= 0) {
+      setState(() {
+         _secondsRemaining = 0;
+      });
+      _stopTimer();
+      return; 
+    }
+
+    _secondsRemaining = time; // Start from the provided time
     _stopTimer();
     
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -144,6 +157,7 @@ class _QuizState extends State<Quiz> {
           _secondsRemaining--;
         });
       } else {
+        // Time is up, auto-advance
         _goToNextQuestion(timedOut: true);
       }
     });
@@ -174,8 +188,8 @@ class _QuizState extends State<Quiz> {
         questionIndex: _currentQuestionIndex,
         totalQuestions: _currentQuestions.length,
         selectedAnswer: _currentSelectedAnswer,
-        secondsRemaining: _secondsRemaining,
-        optionsToDisplay: _shuffledOptions, // Pass the static options
+        secondsRemaining: _secondsRemaining, 
+        optionsToDisplay: _shuffledOptions, 
         onSelectAnswer: _selectAnswer,
         onNext: _goToNextQuestion,
         onPrevious: _goToPreviousQuestion,
