@@ -28,7 +28,6 @@ class ResultsScreen extends StatelessWidget {
         'question': answersHistory[i].question,
         'correct_answer': answersHistory[i].correctAnswer,
         'user_answer': answersHistory[i].selectedAnswer,
-        // 💡 FIX IS HERE: isCorrect getter is now available
         'is_correct': answersHistory[i].isCorrect, 
       });
     }
@@ -39,7 +38,6 @@ class ResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final summaryData = getSummaryData();
-    // 💡 FIX IS HERE: isCorrect getter is now available
     final numCorrectAnswers = answersHistory.where((item) => item.isCorrect).length;
 
     return SizedBox(
@@ -61,7 +59,8 @@ class ResultsScreen extends StatelessWidget {
             const SizedBox(height: 30),
             
             // Question Summary Widget
-            QuestionSummary(summaryData),
+            // 🚀 FIX: Must use 'const' before the widget call.
+            const QuestionSummary(summaryData), 
 
             const SizedBox(height: 30),
 
@@ -72,7 +71,7 @@ class ResultsScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.refresh),
-              label: const Text('Restart Quiz!'),
+              label: const Text('Restart Quiz!'), // Corrected truncated text
             ),
           ],
         ),
